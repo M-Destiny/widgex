@@ -1,0 +1,9 @@
+app = "widgex"
+primary_region = "iad"
+[build]
+  builder = "heroku/buildpacks:20"
+[[services]]
+  internal_port = 5173
+  protocol = "http"
+  [[services.ports]]
+    port = 80
