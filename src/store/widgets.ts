@@ -1,17 +1,22 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { Widget, UserWidget, Review } from '../types';
 
 interface WidgetState {
   widgets: Widget[];
   cart: Widget[];
   installed: UserWidget[];
+  wishlist: string[];
   activeCategory: string | null;
   search: string;
   addToCart: (widget: Widget) => void;
   removeFromCart: (id: string) => void;
   installWidget: (widget: Widget) => void;
+  toggleWishlist: (widgetId: string) => void;
+  isInWishlist: (widgetId: string) => boolean;
   setCategory: (cat: string | null) => void;
   setSearch: (s: string) => void;
+  clearCart: () => void;
 }
 
 const mockWidgets: Widget[] = [
@@ -28,17 +33,38 @@ const _mockReviews: Review[] = [
   { id: '2', widgetId: '1', userId: 'u2', userName: 'Maria S.', rating: 4, comment: 'Great components, a bit pricey but worth it.', createdAt: '2024-02-08' },
 ];
 
-export const useWidgetStore = create<WidgetState>((set) => ({
-  widgets: mockWidgets,
-  cart: [],
-  installed: [],
-  activeCategory: null,
-  search: '',
-  addToCart: (widget) => set((s) => ({ cart: [...s.cart.filter((w) => w.id !== widget.id), widget] })),
-  removeFromCart: (id) => set((s) => ({ cart: s.cart.filter((w) => w.id !== id) })),
-  installWidget: (widget) => set((s) => ({
-    installed: [...s.installed.filter((w) => w.widgetId !== widget.id), { widgetId: widget.id, installedAt: new Date().toISOString(), config: {} }],
-  })),
-  setCategory: (cat) => set({ activeCategory: cat }),
-  setSearch: (s) => set({ search: s }),
-}));
+export const useWidgetStore = create<WidgetState>()(
+  persist(
+    (set, get) => ({
+      widgets: mockWidgets,
+      cart: [],
+      installed: [],
+      wishlist: [],
+      activeCategory: null,
+      search: '',
+      addToCart: (widget) => set((s) => ({ cart: [...s.cart.filter((w) => w.id !== widget.id), widget] })),
+      removeFromCart: (id) => set((s) => ({ cart: s.cart.filter((w) => w.id !== id) })),
+      installWidget: (widget) => set((s) => ({
+        installed: [...s.installed.filter((w) => w.widgetId !== widget.id), { widgetId: widget.id, installedAt: new Date().toISOString(), config: {} }],
+        cart: s.cart.filter((w) => w.id !== widget.id),
+      })),
+      toggleWishlist: (widgetId) => set((s) => ({
+        wishlist: s.wishlist.includes(widgetId)
+          ? s.wishlist.filter((id) => id !== widgetId)
+          : [...s.wishlist, widgetId],
+      })),
+      isInWishlist: (widgetId) => get().wishlist.includes(widgetId),
+      setCategory: (cat) => set({ activeCategory: cat }),
+      setSearch: (s) => set({ search: s }),
+      clearCart: () => set({ cart: [] }),
+    }),
+    {
+      name: 'widgex-storage',
+      partialize: (state) => ({
+        cart: state.cart,
+        installed: state.installed,
+        wishlist: state.wishlist,
+      }),
+    }
+  )
+);

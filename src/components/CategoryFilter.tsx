@@ -22,8 +22,8 @@ export default function CategoryFilter() {
           onClick={() => setCategory(id)}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
             activeCategory === id
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+              ? 'btn-primary'
+              : 'bg-surface-2 text-text-muted hover:bg-border'
           }`}
         >
           {label}

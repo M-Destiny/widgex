@@ -1,3 +1,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-bg text-text;
+    background-image: radial-gradient(
+        1200px 600px at 80% -10%,
+        rgba(99, 102, 241, 0.08),
+        transparent 60%
+      ),
+      radial-gradient(900px 500px at -10% 110%, rgba(245, 158, 11, 0.05), transparent 60%);
+    background-attachment: fixed;
+  }
+  code,
+  pre {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-btn px-4 py-2 bg-accent text-white font-medium text-sm transition-all hover:bg-accent-hover hover:brightness-110 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-btn px-4 py-2 bg-surface-2 text-text font-medium text-sm transition-all hover:bg-border active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .card {
+    @apply bg-surface border border-border rounded-card;
+  }
+  .pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+  .input {
+    @apply w-full px-3 py-2 bg-surface-2 border border-border rounded-input text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50;
+  }
+  .badge-featured {
+    @apply pill bg-accent-warm/20 text-accent-warm border border-accent-warm/30;
+    animation: pulse-glow 2.4s ease-in-out infinite;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0f1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #2e3347;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a405c;
+}

@@ -1,8 +1,9 @@
 services:
   - type: web
     name: widgex
-    runtime: node
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     region: oregon
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run preview
+    healthCheckPath: /
+    autoDeploy: true

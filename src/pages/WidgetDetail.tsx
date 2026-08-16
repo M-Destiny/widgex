@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useWidgetStore } from '../store/widgets';
 import WidgetPreview from '../components/WidgetPreview';
 import ReviewCard from '../components/ReviewCard';
-import { ShoppingCart, Download, Star } from 'lucide-react';
+import { ShoppingCart, Download, Star, Heart } from 'lucide-react';
 
 const mockReviews = [
   { id: '1', widgetId: '1', userId: 'u1', userName: 'Alex T.', rating: 5, comment: 'Best chart library I have ever used. Highly recommended!', createdAt: '2024-02-10' },
@@ -12,11 +12,12 @@ const mockReviews = [
 export default function WidgetDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { widgets, cart, addToCart, installWidget } = useWidgetStore();
+  const { widgets, cart, wishlist, addToCart, installWidget, toggleWishlist, isInWishlist } = useWidgetStore();
   const widget = widgets.find((w) => w.id === id);
   const inCart = cart.some((w) => w.id === id);
+  const inWishlist = isInWishlist(id || '');
 
-  if (!widget) return <div className="p-10 text-center">Widget not found</div>;
+  if (!widget) return <div className="p-10 text-center text-text-muted">Widget not found</div>;
 
   const reviews = mockReviews.filter((r) => r.widgetId === id);
 
@@ -25,36 +26,45 @@ export default function WidgetDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <WidgetPreview widget={widget} />
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold">{widget.name}</h1>
-          <p className="text-gray-500">{widget.description}</p>
+          <h1 className="text-3xl font-bold text-text">{widget.name}</h1>
+          <p className="text-text-muted">{widget.description}</p>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1"><Star size={16} className="text-yellow-500 fill-yellow-500" /> {widget.rating} ({widget.reviewCount} reviews)</span>
-            <span className="text-gray-400">{widget.installs.toLocaleString()} installs</span>
+            <span className="flex items-center gap-1"><Star size={16} className="text-accent-warm fill-accent-warm" /> {widget.rating} ({widget.reviewCount} reviews)</span>
+            <span className="text-text-muted">{widget.installs.toLocaleString()} installs</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-4xl font-bold text-blue-600">${widget.price}</span>
+            <span className="text-4xl font-bold text-accent">${widget.price}</span>
             <button
               onClick={() => addToCart(widget)}
               disabled={inCart}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-colors ${
-                inCart ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-btn font-semibold transition-colors ${
+                inCart ? 'bg-surface-2 text-text-muted cursor-not-allowed' : 'btn-primary'
               }`}
             >
               <ShoppingCart size={18} />
               {inCart ? 'In Cart' : 'Add to Cart'}
             </button>
-            <button onClick={() => { installWidget(widget); navigate('/dashboard'); }} className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <button onClick={() => { installWidget(widget); navigate('/dashboard'); }} className="flex items-center gap-2 px-5 py-2.5 btn-ghost">
               <Download size={18} /> Install Free
             </button>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            {widget.tags.map((tag) => <span key={tag} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs">{tag}</span>)}
+          <div className="flex gap-2 flex-wrap items-center">
+            {widget.tags.map((tag) => <span key={tag} className="pill bg-surface-2 border border-border text-text-muted">{tag}</span>)}
+            <button
+              onClick={() => toggleWishlist(widget.id)}
+              className={`pill flex items-center gap-1.5 transition-colors ${
+                inWishlist ? 'badge-featured' : 'bg-surface-2 text-text-muted hover:bg-border'
+              }`}
+            >
+              <Heart size={14} className={inWishlist ? 'fill-current' : ''} />
+              {inWishlist ? 'Saved' : 'Save'}
+            </button>
           </div>
         </div>
       </div>
       {reviews.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-bold">Reviews</h2>
+          <h2 className="text-xl font-bold text-text">Reviews</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
           </div>

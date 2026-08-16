@@ -1,1 +1,11 @@
-{"name":"widgex","builds":[{"src":"src/**/*","use":"@vercel/node"}],"routes":[{"src":"/(.*)","dest":"index.html"}]}
+{
+  "name": "widgex",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
