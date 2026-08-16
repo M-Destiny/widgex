@@ -10,6 +10,11 @@ export interface Widget {
   thumbnail: string;
   tags: string[];
   installs: number;
+  featured: boolean;
+  version: string;
+  license: string;
+  lastUpdated: string;
+  configSchema: Record<string, unknown>;
 }
 
 export type WidgetCategory = 'charts' | 'forms' | 'tables' | 'media' | 'navigation' | 'feedback';
